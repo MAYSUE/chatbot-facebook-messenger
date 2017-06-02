@@ -1,0 +1,28 @@
+{
+  "name": "chatbots",
+  "version": "1.0.0",
+  "description": "Bot facebook messenger with artificial intelligence",
+  "main": "app.js",
+  "scripts": {
+    "test": "start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mariomoren00/Chatbots.git"
+  },
+  "keywords": [
+    "start"
+  ],
+  "author": "Mario Moreno",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mariomoren00/Chatbots/issues"
+  },
+  "homepage": "https://github.com/mariomoren00/Chatbots#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "promise-mysql": "^3.0.1",
+    "request": "^2.81.0"
+  }
+}
