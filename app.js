@@ -6,6 +6,7 @@ const request = require('request')
 const fs = require('fs')
 const Promise = require("bluebird");
 
+// Declare connection database 
 var getSqlConnection = require('./databaseConnection');
 
 // Declare token facebook 
@@ -41,7 +42,7 @@ app.get('/webhook',function(req, res){
 	if(req.query['hub.verify_token'] === 'hello_token'){
 		res.send(req.query['hub.challenge'])
 	}else{
-		res.send('text');
+		res.send('Invalid token');
 	}
 })
 
@@ -62,9 +63,9 @@ app.post('/webhook',function(req, res){
 })
 
 // Get text messages
-function getMessage(event){
-	var senderID = event.sender.id
-	var messageText = event.message.text
+function getMessage(messagingEvent){
+	var senderID = messagingEvent.sender.id
+	var messageText = messagingEvent.message.text
 	
 	evaluateTextMessage(senderID, messageText)
 }
@@ -81,13 +82,13 @@ function evaluateTextMessage(senderID, messageText){
 }
 
 // Send text message
-function SendTextMessage(senderID, message){
+function SendTextMessage(senderID, messageText){
 	var messageData = {
 		recipient : {
 			id: senderID
 		},
 		message: {
-			text: message
+			text: messageText
 		}
 	}
 
