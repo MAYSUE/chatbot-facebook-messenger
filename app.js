@@ -76,7 +76,7 @@ function evaluateTextMessage(senderID, messageText){
 	    return connection.query('select response from lexico where word = ? and deleted = 0', [messageText]).then(function(rows) {
 	    	SendTextMessage(senderID, rows[0].response);
 	    }).catch(function(error) {
-	      	SendTextMessage(senderID, 'No puedo ayudarte');
+	      	SendTextMessage(senderID, 'I cannot help you');
 	    });
 	});
 }
@@ -104,7 +104,7 @@ function callSendApi(messageData){
 		json: messageData
 	},function(error, response, data){
 		if(error)
-			console.log('Can`t send message');
+			console.log('Cannot send message');
 		else
 			console.log('Successful message');
 	})
