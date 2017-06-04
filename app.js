@@ -4,8 +4,11 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const request = require('request')
 const fs = require('fs')
+const Promise = require("bluebird");
+var getSqlConnection = require('./databaseConnection');
 
-const APP_TOKEN = ''
+
+const APP_TOKEN = 'EAAEi5xta9rUBAMZAoklTSPikydMZBSADVZBvVAkwP5jvhxuQwt0NMbnrGXoragec3xcCrZAMRB5OPR18vht7igKB21PZCSYZCVsk0IM0JTZCvwGAEWjZCNKCIj7D2sZChSZB1uiH3IHmcF2pmMc7g6pGYgYMZASJ34R9cm7HcUuLmp7LAZDZD';
 
 var app = express()
 const folderPath = __dirname + '/app'
@@ -24,32 +27,34 @@ app.listen(PORT,function(){
 	console.log('Listening localhost:3000')
 })
 
-// Read file index 
+// Read file index and send 
 app.get('/',function(req, res){
 	res.sendFile(path.join(__dirname + '/index.html'));
 })
 
 // Mount your other paths
 // In this case render 404.
-app.get("*",function (req, res) {
+/*app.get("*",function (req, res) {
   res.status(404).send('<h1>File not found</h1>');
-});
+});*/
 
-// Request with method get webhook 
+// Request with method get to webhook 
 app.get('/webhook',function(req, res){
-	console.log(req);
-	console.log(res);
+	//console.log(req);
+	//console.log(res);
 	if(req.query['hub.verify_token'] === 'hello_token'){
 		res.send(req.query['hub.challenge'])
 	}else{
-		res.send('')
+		res.send('text');
 	}
 })
 
-// Request with method post webhook
+// Request with method post to webhook
 app.post('/webhook',function(req, res){
 	var data = req.body
-	console.log(data);
+	//console.log(data);
+	//console.log(data.object);
+
 	if(data.object == 'page'){
 		data.entry.forEach(function(pageEntry){
 			pageEntry.messaging.forEach(function(messagingEvent){
@@ -66,25 +71,24 @@ app.post('/webhook',function(req, res){
 function getMessage(event){
 	var senderID = event.sender.id
 	var messageText = event.message.text
+	
+	//console.log(messageText);
 
 	evaluateTextMessage(senderID, messageText)
 }
 
 // Evaluate text message
 function evaluateTextMessage(senderID, messageText){
-	var message = '';
-
-	if(isContain(messageText,'ayuda')){
-		message = 'Por el momento no te puedo ayudar :('
-	}else if(isContain(messageText,'info')){
-		message = 'Hola que tal'
-	}else{
-		message = 'Solo se repetir las cosas T_T '+ messageText
-	}
-
-	SendTextMessage(senderID, message)
+	Promise.using(getSqlConnection(), function(connection) {
+	    return connection.query('select response from lexico where word = ? and deleted = 0', [messageText]).then(function(rows) {
+	    	//console.log(rows);
+	    	SendTextMessage(senderID, rows[0].response);
+	    }).catch(function(error) {
+	      	//console.log(error);
+	      	SendTextMessage(senderID, 'No puedo ayudarte');
+	    });
+	});
 }
-
 
 // Send text message
 function SendTextMessage(senderID, message){
@@ -108,17 +112,11 @@ function callSendApi(messageData){
 		method: 'POST',
 		json: messageData
 	},function(error, response, data){
-		console.log(response);
-		console.log(data);
+		//console.log(response);
+		//console.log(data);
 		if(error)
-			console.log('Can not send message');
+			console.log('Can`t send message');
 		else
 			console.log('Successful message');
 	})
-}
-
-//
-function isContain(texto, word){
-	if(typeof texto=='undefined' || texto.lenght<=0) return false
-	return texto.indexOf(word) > -1
 }
