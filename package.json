@@ -1,7 +1,7 @@
 {
   "name": "chatbots",
   "version": "1.0.0",
-  "description": "Bot facebook messenger with artificial intelligence",
+  "description": "Bot facebook messenger with artificial intelligence (AI)",
   "main": "app.js",
   "scripts": {
     "test": "start"
