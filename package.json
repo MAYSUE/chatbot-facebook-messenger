@@ -4,11 +4,11 @@
   "description": "Bot facebook messenger with artificial intelligence (AI)",
   "main": "app.js",
   "scripts": {
-    "test": "start"
+    "start": "nodemon app.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mariomoren00/Chatbots.git"
+    "url": "git+https://github.com/mariomoren00/chatbots.git"
   },
   "keywords": [
     "start"
@@ -22,6 +22,7 @@
   "dependencies": {
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.2",
+    "dotenv": "^4.0.0",
     "express": "^4.15.3",
     "promise-mysql": "^3.0.1",
     "request": "^2.81.0"
