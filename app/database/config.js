@@ -4,7 +4,7 @@ var mysql = require('promise-mysql');
 pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'yourpassword',
+  password: 'youpassword',
   database: 'chatbots',
   port: 3306,
   connectionLimit: 10,

@@ -34,11 +34,14 @@ app.get('/',function(req, res){
 
 // Request with method get to webhook
 app.get('/webhook',function(req, res){
-	if(req.query['hub.verify_token'] === 'hello_token'){
-		res.send(req.query['hub.challenge'])
-	}else{
-		res.send('Invalid token');
-	}
+	if (req.query['hub.mode'] === 'subscribe' &&
+		req.query['hub.verify_token'] === 'hello_token') {
+		console.log("Validating webhook");
+	res.status(200).send(req.query['hub.challenge']);
+	} else {
+		console.error("Failed validation. Make sure the validation tokens match.");
+	res.sendStatus(403);          
+	}  
 })
 
 // Request with method post to webhook
@@ -46,9 +49,10 @@ app.post('/webhook',function(req, res){
 	var data = req.body
 	if(data.object == 'page'){
 		data.entry.forEach(function(pageEntry){
-			pageEntry.messaging.forEach(function(messagingEvent){
-				if(messagingEvent.message){
-					getMessage(messagingEvent)
+			pageEntry.messaging.forEach(function(event){
+				if(event.message){
+					console.log("Webhook received unknown event: ", event);					
+					getMessage(event)
 				}
 			})
 		})
@@ -67,7 +71,8 @@ function getMessage(messagingEvent){
 function evaluateTextMessage(senderID, messageText){
 	Promise.using(getSqlConnection(), function(connection) {
 	    return connection.query('select response from lexico where word = ? and deleted = 0', [messageText]).then(function(rows) {
-	    	SendTextMessage(senderID, rows[0].response);
+			console.log(rows[0].response);
+			SendTextMessage(senderID, rows[0].response);
 	    }).catch(function(error) {
 	      	SendTextMessage(senderID, 'I cannot help you');
 	    });
@@ -90,14 +95,19 @@ function SendTextMessage(senderID, messageText){
 // Calling API to send message
 function callSendApi(messageData){
 	request({
-		uri: 'https://graph.facebook.com/v2.9/me/messages',
-		qs: {access_token: process.env.APP_TOKEN},
+		uri: 'https://graph.facebook.com/v2.6/me/messages',
+		qs: { access_token: ''},
 		method: 'POST',
 		json: messageData
-	},function(error, response, data){
-		if(error)
-			console.log('Cannot send message');
-		else
-			console.log('Successful message');
+	},function(error, response, body){
+		if (!error && response.statusCode == 200) {
+			var recipientId = body.recipient_id;
+			var messageId = body.message_id;
+			console.log("Successfully sent generic message with id %s to recipient %s", messageId, recipientId);
+		} else {
+			console.error("Unable to send message.");
+			console.error(response);
+			console.error(error);
+		}
 	})
 }
