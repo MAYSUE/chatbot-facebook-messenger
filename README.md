@@ -1,10 +1,22 @@
-# Chatbots
-Bot facebook messenger  with artificial intelligence (AI)
+# Chatbot Facebook Messenger
 
+Bot facebook messenger  with NPL
 
-# Tools
+### Update dependencies
 
+```bash
+npm install
+```
 
-# Installation
+### Running 
+
+```bash
+node app.js
+```
+
+## License
+
+MIT Licensed
+Copyright (c) 2017 Mario Moreno
 
 
